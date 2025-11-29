@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mentor Dashboard - {{ course_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-body">
+<header class="app-header">
+    <div class="logo">{{ course_name }}</div>
+    <div class="header-right">
+        <span class="welcome">Hi, {{ user.name }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline small">Logout</a>
+    </div>
+</header>
+
+<main class="dashboard">
+    <h2>Mentor Dashboard</h2>
+
+    <!-- Student Performance -->
+    <section class="mentor-section">
+        <h3>Student Performance Overview</h3>
+        <div id="mentor-students-performance" class="cards"></div>
+    </section>
+
+    <!-- Video Lessons -->
+    <section class="mentor-section">
+        <h3>Classes & Video Lessons</h3>
+        <div class="mentor-assignments">
+            <div>
+                <h4>Add New Class</h4>
+                <input type="text" id="lesson-title" placeholder="Lesson Title">
+                <input type="text" id="lesson-topic" placeholder="Topic (optional)">
+                <input type="text" id="lesson-url" placeholder="Video URL (YouTube, Drive, etc)">
+                <textarea id="lesson-desc" placeholder="Short description"></textarea>
+                <button id="create-lesson-btn" class="btn btn-primary small">Add Lesson</button>
+            </div>
+            <div>
+                <h4>Your Classes</h4>
+                <div id="mentor-lessons-list" class="cards small-cards"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manual Quizzes -->
+    <section class="mentor-section">
+        <h3>Manual Quizzes</h3>
+        <div class="mentor-assignments">
+            <div>
+                <h4>Create New Quiz</h4>
+                <input type="text" id="quiz-title" placeholder="Quiz Title">
+                <textarea id="quiz-desc" placeholder="Quiz Description"></textarea>
+                <button id="create-quiz-btn" class="btn btn-primary small">Create Quiz</button>
+            </div>
+            <div>
+                <h4>Your Quizzes</h4>
+                <div id="mentor-quizzes-list" class="cards small-cards"></div>
+            </div>
+        </div>
+
+        <div class="mentor-assignments">
+            <div>
+                <h4>Add Question to Selected Quiz</h4>
+                <p id="selected-quiz-label" class="muted small">No quiz selected</p>
+                <textarea id="quiz-question-text" placeholder="Question text"></textarea>
+                <input type="text" id="quiz-opt-a" placeholder="Option A">
+                <input type="text" id="quiz-opt-b" placeholder="Option B">
+                <input type="text" id="quiz-opt-c" placeholder="Option C">
+                <input type="text" id="quiz-opt-d" placeholder="Option D">
+                <input type="text" id="quiz-correct" placeholder="Correct option (a/b/c/d)">
+                <input type="text" id="quiz-topic" placeholder="Topic (optional)">
+                <button id="add-quiz-question-btn" class="btn btn-secondary small">Add Question</button>
+            </div>
+            <div>
+                <h4>Questions in Selected Quiz</h4>
+                <div id="mentor-quiz-questions-list" class="cards small-cards"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assignments -->
+    <section class="mentor-section">
+        <h3>Assignments</h3>
+        <div class="mentor-assignments">
+            <div>
+                <h4>Create Assignment</h4>
+                <input type="text" id="new-assignment-title" placeholder="Title">
+                <textarea id="new-assignment-desc" placeholder="Description"></textarea>
+                <input type="date" id="new-assignment-due">
+                <button id="create-assignment-btn" class="btn btn-primary small">Create</button>
+            </div>
+            <div>
+                <h4>Existing Assignments</h4>
+                <div id="mentor-assignments-list" class="cards small-cards"></div>
+            </div>
+        </div>
+        <div>
+            <h4>Student Submissions</h4>
+            <div id="mentor-submissions-list" class="cards"></div>
+        </div>
+    </section>
+
+    <!-- Student Doubts -->
+    <section class="mentor-section">
+        <h3>Student Questions</h3>
+        <div id="mentor-messages" class="cards"></div>
+    </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    window.MENTOR_CONTEXT = {
+        assignmentsUrl: "{{ url_for('api_mentor_assignments') }}",
+        submissionsPatternUrl: "{{ url_for('api_mentor_submissions', assignment_id=0) }}",
+        feedbackUrl: "{{ url_for('api_mentor_feedback') }}",
+        messagesUrl: "{{ url_for('api_mentor_messages') }}",
+        studentsUrl: "{{ url_for('api_mentor_students') }}",
+        lessonsUrl: "{{ url_for('api_mentor_lessons') }}",
+        quizzesUrl: "{{ url_for('api_mentor_quizzes') }}",
+        quizQuestionsPatternUrl: "{{ url_for('api_mentor_quiz_questions', quiz_id=0) }}"
+    };
+</script>
+</body>
+</html>

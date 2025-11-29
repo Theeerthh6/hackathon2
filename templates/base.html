@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course_name or "SmartPath" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-body">
+
+<header class="app-header">
+    <div class="logo">{{ course_name or "SmartPath" }}</div>
+    <div class="header-right">
+        <a href="{{ url_for('login_student') }}" class="btn btn-primary small">Student Login</a>
+        <a href="{{ url_for('login_mentor') }}" class="btn btn-outline small">Mentor Login</a>
+    </div>
+</header>
+
+<main class="landing">
+    <section class="hero">
+        <h1>{{ course_name or "SmartPath" }}</h1>
+        <p>An adaptive learning platform that generates real-time learning paths,
+           instant quizzes, and mentor support for your Python journey.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('register_student') }}" class="btn btn-primary">Join as Student</a>
+            <a href="{{ url_for('register_mentor') }}" class="btn btn-secondary">Join as Mentor</a>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

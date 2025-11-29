@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard - {{ course_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-body">
+<header class="app-header">
+    <div class="logo">{{ course_name }}</div>
+    <div class="header-right">
+        <span class="welcome">Hi, {{ user.name }}</span>
+        <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline small">Logout</a>
+    </div>
+</header>
+
+<main class="dashboard">
+    <nav class="tabs">
+        <button class="tab active" data-tab="learning-path">Learning Path</button>
+        <button class="tab" data-tab="progress">Progress Dashboard</button>
+        <button class="tab" data-tab="quizzes">Instant Quiz</button>
+        <button class="tab" data-tab="lessons">Lessons & Recommendations</button>
+        <button class="tab" data-tab="assignments">Assignments</button>
+        <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <section id="tab-learning-path" class="tab-content active">
+        <h2>Your Personalized Learning Path</h2>
+        <p class="muted">All recommendations are based on your performance in this course.</p>
+        <div id="learning-path-container" class="cards"></div>
+    </section>
+
+    <section id="tab-progress" class="tab-content">
+        <h2>Your Progress Overview</h2>
+        <div id="progress-summary" class="progress-grid"></div>
+        <div id="topic-stats" class="cards"></div>
+    </section>
+
+    <section id="tab-quizzes" class="tab-content">
+        <h2>Instant Quiz Generator</h2>
+        <div class="quiz-controls">
+            <label>
+                Mode:
+                <select id="quiz-mode">
+                    <option value="smart">Smart (Adaptive)</option>
+                    <option value="manual">Manual (Mentor-Created)</option>
+                </select>
+            </label>
+
+            <div id="manual-quiz-selector" class="inline-field hidden">
+                <label>
+                    Choose Quiz:
+                    <select id="manual-quiz-list"></select>
+                </label>
+            </div>
+
+            <button id="generate-quiz-btn" class="btn btn-primary">Generate Quiz</button>
+        </div>
+        <div id="quiz-container"></div>
+    </section>
+
+    <section id="tab-lessons" class="tab-content">
+        <h2>Lessons & Recommendations</h2>
+        <p class="muted">AI suggestions + mentor video lessons for this course.</p>
+        <div id="lessons-container" class="cards"></div>
+    </section>
+
+    <section id="tab-assignments" class="tab-content">
+        <h2>Your Assignments</h2>
+        <div id="assignments-container" class="cards"></div>
+    </section>
+
+    <section id="tab-settings" class="tab-content">
+        <h2>Settings</h2>
+        <div class="settings-grid">
+            <div class="card">
+                <h3>Learning Goal</h3>
+                <label>Daily Study Goal (minutes)</label>
+                <input type="number" id="daily-goal" placeholder="30">
+                <button class="btn btn-secondary small" id="save-goal-btn">Save</button>
+                <p id="goal-status" class="muted small"></p>
+            </div>
+            <div class="card">
+                <h3>Appearance</h3>
+                <button id="toggle-theme" class="btn btn-outline small">Toggle Light/Dark</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Mentor Button -->
+<button id="mentor-btn" class="mentor-btn">Mentor</button>
+
+<!-- Mentor Options Modal -->
+<div id="mentor-modal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Need Help?</h3>
+        <p>Choose between AI mentor or your real mentor.</p>
+        <div class="modal-actions">
+            <button id="ai-mentor-btn" class="btn btn-primary">AI Mentor</button>
+            <button id="real-mentor-btn" class="btn btn-secondary">Real Mentor</button>
+        </div>
+        <button class="modal-close" id="mentor-modal-close">×</button>
+    </div>
+</div>
+
+<!-- AI Mentor Panel -->
+<div id="ai-mentor-panel" class="side-panel hidden">
+    <div class="side-panel-header">
+        <h3>AI Mentor</h3>
+        <button id="ai-mentor-close" class="icon-btn">×</button>
+    </div>
+    <div id="ai-mentor-messages" class="side-panel-body">
+        <p class="muted">Ask about any concept or question in this Python course.</p>
+    </div>
+    <div class="side-panel-footer">
+        <input type="text" id="ai-mentor-input" placeholder="Type your doubt...">
+        <button id="ai-mentor-send" class="btn btn-primary small">Send</button>
+    </div>
+</div>
+
+<!-- Real Mentor Panel -->
+<div id="real-mentor-panel" class="side-panel hidden">
+    <div class="side-panel-header">
+        <h3>Real Mentor</h3>
+        <button id="real-mentor-close" class="icon-btn">×</button>
+    </div>
+    <div id="real-mentor-messages" class="side-panel-body">
+        <p class="muted">Send a question to your mentor. They can reply from their dashboard.</p>
+    </div>
+    <div class="side-panel-footer">
+        <input type="text" id="real-mentor-input" placeholder="Type your message...">
+        <button id="real-mentor-send" class="btn btn-secondary small">Send</button>
+    </div>
+</div>
+
+<script>
+    window.STUDENT_CONTEXT = {
+        progressUrl: "{{ url_for('api_progress') }}",
+        learningPathUrl: "{{ url_for('api_learning_path') }}",
+        quizGenerateUrl: "{{ url_for('api_generate_quiz') }}",
+        quizSubmitUrl: "{{ url_for('api_submit_quiz') }}",
+        manualQuizzesUrl: "{{ url_for('api_student_manual_quizzes') }}",
+        assignmentsUrl: "{{ url_for('api_student_assignments') }}",
+        assignmentSubmitUrl: "{{ url_for('api_submit_assignment') }}",
+        lessonsUrl: "{{ url_for('api_student_lessons') }}",
+        mentorMessageUrl: "{{ url_for('api_student_message_mentor') }}",
+        aiMentorUrl: "{{ url_for('api_student_ai_mentor') }}"
+    };
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    // Defensive: ensure the theme toggle works even if main.js initialization misses it
+    (function(){
+        function attachToggle(){
+            const btn = document.getElementById('toggle-theme');
+            if (!btn) return;
+            btn.addEventListener('click', function(){
+                // prefer the main API if available
+                if (window.toggleTheme) {
+                    window.toggleTheme();
+                } else {
+                    document.body.classList.toggle('light-mode');
+                }
+            });
+        }
+        // Try immediately and also after a small delay to be safe
+        attachToggle();
+        setTimeout(attachToggle, 50);
+    })();
+</script>
+</body>
+</html>
